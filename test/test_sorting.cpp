@@ -29,7 +29,13 @@ static std::vector<int> reversed_vec(int n)
 }
 
 // --- correctness -------------------------------------------------------------
-TEMPLATE_TEST_CASE("Sorting - correctness", "[sorting][correctness]", Sorting::QuickSort, Sorting::MergeSort, Sorting::HeapSort, Sorting::StdSort)
+TEMPLATE_TEST_CASE("Sorting - correctness",
+  "[sorting][correctness]",
+  Sorting::QuickSort,
+  Sorting::MergeSort,
+  Sorting::HeapSort,
+  Sorting::InsertionSort,
+  Sorting::StdSort)
 {
 	TestType algo;
 	DSALog::info("[sorting] testing {}", algo.name());
@@ -80,7 +86,12 @@ TEMPLATE_TEST_CASE("Sorting - correctness", "[sorting][correctness]", Sorting::Q
 }
 
 // --- property: output is a permutation of input ------------------------------
-TEMPLATE_TEST_CASE("Sorting - output is permutation", "[sorting][property]", Sorting::QuickSort, Sorting::MergeSort, Sorting::HeapSort)
+TEMPLATE_TEST_CASE("Sorting - output is permutation",
+  "[sorting][property]",
+  Sorting::QuickSort,
+  Sorting::MergeSort,
+  Sorting::InsertionSort,
+  Sorting::HeapSort)
 {
 	TestType algo;
 	auto input = random_vec(500);
@@ -94,7 +105,7 @@ TEMPLATE_TEST_CASE("Sorting - output is permutation", "[sorting][property]", Sor
 }
 
 // --- property: MergeSort is stable -------------------------------------------
-TEST_CASE("MergeSort is stable", "[sorting][stable]")
+TEST_CASE("MergeSort and InsertionSort are stable", "[sorting][stable]")
 {
 	// Use pairs; sort by first, verify second-key order is preserved
 	// (We exercise via equal keys in first-key position)
@@ -104,6 +115,10 @@ TEST_CASE("MergeSort is stable", "[sorting][stable]")
 	auto expected = input;
 	std::stable_sort(expected.begin(), expected.end());
 	REQUIRE(result == expected);
+
+	Sorting::InsertionSort is;
+    result = is.run(input);
+    REQUIRE(result == expected);
 }
 
 // --- benchmarks (Catch2 BENCHMARK macro) -------------------------------------
@@ -127,6 +142,10 @@ TEST_CASE("Sorting benchmarks", "[sorting][benchmark][!benchmark]")
 	{
 		return Sorting::HeapSort{}.run(r100);
 	};
+    BENCHMARK("InsertionSort   random-100") 
+	{ 
+		return Sorting::InsertionSort{}.run(r100); 
+	};
 	BENCHMARK("std::sort  random-100")
 	{
 		return Sorting::StdSort{}.run(r100);
@@ -143,6 +162,10 @@ TEST_CASE("Sorting benchmarks", "[sorting][benchmark][!benchmark]")
 	BENCHMARK("HeapSort   random-1k")
 	{
 		return Sorting::HeapSort{}.run(r1k);
+	};
+    BENCHMARK("InsertionSort   random-1k") 
+	{ 
+		return Sorting::InsertionSort{}.run(r1k); 
 	};
 	BENCHMARK("std::sort  random-1k")
 	{
@@ -165,6 +188,10 @@ TEST_CASE("Sorting benchmarks", "[sorting][benchmark][!benchmark]")
 	BENCHMARK("HeapSort   sorted-1k")
 	{
 		return Sorting::HeapSort{}.run(s1k);
+	};
+    BENCHMARK("InsertionSort   sorted-1k") 
+	{ 
+		return Sorting::InsertionSort{}.run(s1k); 
 	};
 	BENCHMARK("std::sort  sorted-1k")
 	{
