@@ -197,7 +197,7 @@ public:
 
 // -- std::sort wrapper (reference baseline) -----------------------------------
 /**
- * std::sort uses hybrid algorithm.
+ * std::sort uses hybrid algorithm Introsort (introspective sort).
  * How it works: 
  * 1. It starts with Quick Sort.
  * 2. If the recursion depth gets too deep (risking O(n2)), it switches to Heap Sort.
