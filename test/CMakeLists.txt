@@ -31,7 +31,14 @@ add_test(NAME cli.has_help COMMAND intro --help)
 add_test(NAME cli.version_matches COMMAND intro --version)
 set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
-add_executable(tests test_main.cpp test_sorting.cpp test_searching.cpp test_graph.cpp test_dp.cpp)
+add_executable(tests 
+    test_main.cpp 
+    test_sorting.cpp 
+    test_searching.cpp 
+    test_graph.cpp 
+    test_dp.cpp
+    test_heap.cpp)
+
 target_link_libraries(
   tests
   PRIVATE myproject::myproject_warnings

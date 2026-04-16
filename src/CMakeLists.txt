@@ -7,6 +7,7 @@ add_executable(dsa main.cpp
     algo/searching.h
     algo/graph.h
     algo/dp.h
+    algo/heap.h
 )
 
 target_link_libraries(
