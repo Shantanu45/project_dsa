@@ -74,18 +74,18 @@ class MaxHeap
 
 	void push(T val)
 	{
-		data_.push_back(std::move(val));
-		sift_up((int)data_.size() - 1);
+		data_.push_back(std::move(val));		// add to end
+		sift_up((int)data_.size() - 1);			// restore order
 	}
 
 	// Remove and return the maximum element.
 	T pop()
 	{
 		if (data_.empty()) throw std::out_of_range("MaxHeap is empty");
-		T top = std::move(data_[0]);
-		data_[0] = std::move(data_.back());
-		data_.pop_back();
-		if (!data_.empty()) sift_down(0);
+		T top = std::move(data_[0]);				// save max
+		data_[0] = std::move(data_.back());			// move the last element to the root (removing the only element that can be removed without leaving a hole in the middle of the array.)
+		data_.pop_back();							// remove the old last element
+		if (!data_.empty()) sift_down(0);			// restore order
 		return top;
 	}
 
