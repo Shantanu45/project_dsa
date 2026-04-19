@@ -33,6 +33,7 @@ static std::vector<int> reversed_vec(int n)
 // =============================================================================
 TEST_CASE("MaxHeap - basic operations", "[heap][maxheap][correctness]")
 {
+	DSALog::info("[heap] MaxHeap basic operations");
 	Heap::MaxHeap<int> h;
 
 	SECTION("empty heap throws on top and pop")
@@ -100,16 +101,15 @@ TEST_CASE("MaxHeap - basic operations", "[heap][maxheap][correctness]")
 
 TEST_CASE("MaxHeap - heapify constructor (Floyd O(n))", "[heap][maxheap][correctness]")
 {
+	DSALog::info("[heap] MaxHeap heapify constructor");
 	auto input = random_vec(500);
 	Heap::MaxHeap<int> h(input);
 
 	REQUIRE(h.size() == input.size());
 
-	// Max of the input must be at the top
 	int expected_max = *std::max_element(input.begin(), input.end());
 	REQUIRE(h.top() == expected_max);
 
-	// drain_sorted must return all elements in ascending order
 	auto sorted = h.drain_sorted();
 	auto expected = input;
 	std::sort(expected.begin(), expected.end());
@@ -119,6 +119,7 @@ TEST_CASE("MaxHeap - heapify constructor (Floyd O(n))", "[heap][maxheap][correct
 
 TEST_CASE("MaxHeap - drain_sorted", "[heap][maxheap][correctness]")
 {
+	DSALog::info("[heap] MaxHeap drain_sorted");
 	Heap::MaxHeap<int> h;
 	std::vector<int> input = {5, 2, 8, 1, 9, 3};
 	for (int x : input) h.push(x);
@@ -134,6 +135,7 @@ TEST_CASE("MaxHeap - drain_sorted", "[heap][maxheap][correctness]")
 // =============================================================================
 TEST_CASE("MinHeap - basic operations", "[heap][minheap][correctness]")
 {
+	DSALog::info("[heap] MinHeap basic operations");
 	Heap::MinHeap<int> h;
 
 	SECTION("empty heap throws on top and pop")
@@ -191,6 +193,7 @@ TEST_CASE("MinHeap - basic operations", "[heap][minheap][correctness]")
 
 TEST_CASE("MinHeap - heapify constructor", "[heap][minheap][correctness]")
 {
+	DSALog::info("[heap] MinHeap heapify constructor");
 	auto input = random_vec(500);
 	Heap::MinHeap<int> h(input);
 
@@ -208,12 +211,12 @@ TEST_CASE("MinHeap - heapify constructor", "[heap][minheap][correctness]")
 // =============================================================================
 TEST_CASE("MaxHeap and MinHeap contain the same elements as input", "[heap][property]")
 {
+	DSALog::info("[heap] MaxHeap and MinHeap symmetry");
 	auto input = random_vec(300);
 
 	Heap::MaxHeap<int> mxh(input);
 	Heap::MinHeap<int> mnh(input);
 
-	// Both should produce the same multiset when drained
 	auto from_max = mxh.drain_sorted();
 	auto from_min = mnh.drain_sorted();
 
@@ -229,6 +232,7 @@ TEST_CASE("MaxHeap and MinHeap contain the same elements as input", "[heap][prop
 // =============================================================================
 TEST_CASE("MedianHeap - basic correctness", "[heap][medianheap][correctness]")
 {
+	DSALog::info("[heap] MedianHeap basic correctness");
 	Heap::MedianHeap mh;
 
 	SECTION("empty throws")
@@ -264,7 +268,6 @@ TEST_CASE("MedianHeap - basic correctness", "[heap][medianheap][correctness]")
 
 	SECTION("insertion order does not affect result")
 	{
-		// Same 5 elements inserted in different orders
 		Heap::MedianHeap mh2;
 		for (int x : {5, 1, 3, 2, 4}) mh.push(x);
 		for (int x : {3, 5, 1, 4, 2}) mh2.push(x);
@@ -286,11 +289,11 @@ TEST_CASE("MedianHeap - basic correctness", "[heap][medianheap][correctness]")
 
 TEST_CASE("MedianHeap - running median matches sort-based answer", "[heap][medianheap][property]")
 {
-	auto input = random_vec(201);  // odd size so median is exact integer
+	DSALog::info("[heap] MedianHeap running median (odd size)");
+	auto input = random_vec(201);
 	Heap::MedianHeap mh;
 	for (int x : input) mh.push(x);
 
-	// Ground truth via sorting
 	auto sorted = input;
 	std::sort(sorted.begin(), sorted.end());
 	double expected = sorted[sorted.size() / 2];
@@ -300,7 +303,8 @@ TEST_CASE("MedianHeap - running median matches sort-based answer", "[heap][media
 
 TEST_CASE("MedianHeap - even-size median matches sort-based answer", "[heap][medianheap][property]")
 {
-	auto input = random_vec(200);  // even size
+	DSALog::info("[heap] MedianHeap running median (even size)");
+	auto input = random_vec(200);
 	Heap::MedianHeap mh;
 	for (int x : input) mh.push(x);
 
@@ -317,12 +321,11 @@ TEST_CASE("MedianHeap - even-size median matches sort-based answer", "[heap][med
 // =============================================================================
 TEST_CASE("TopK - correctness", "[heap][topk][correctness]")
 {
+	DSALog::info("[heap] TopK correctness");
 	Heap::TopKElements heap_algo;
 	Heap::TopKSort     sort_algo;
 
 	auto input = random_vec(1000);
-
-	// Sort descending to compute expected answers
 	auto sorted_desc = input;
 	std::sort(sorted_desc.rbegin(), sorted_desc.rend());
 
@@ -360,6 +363,7 @@ TEST_CASE("TopK - correctness", "[heap][topk][correctness]")
 
 TEST_CASE("TopK - edge cases", "[heap][topk][correctness]")
 {
+	DSALog::info("[heap] TopK edge cases");
 	Heap::TopKElements algo;
 
 	SECTION("all equal elements")
@@ -378,7 +382,7 @@ TEST_CASE("TopK - edge cases", "[heap][topk][correctness]")
 
 	SECTION("reverse sorted input")
 	{
-		auto input = reversed_vec(100);  // 99..0
+		auto input = reversed_vec(100);
 		auto result = algo.run({input, 3});
 		REQUIRE(result == std::vector<int>({99, 98, 97}));
 	}
@@ -389,6 +393,7 @@ TEST_CASE("TopK - edge cases", "[heap][topk][correctness]")
 // =============================================================================
 TEST_CASE("KthLargest - correctness", "[heap][kthlargest][correctness]")
 {
+	DSALog::info("[heap] KthLargest correctness");
 	Heap::KthLargestHeap heap_algo;
 	Heap::KthLargestNth  nth_algo;
 
@@ -429,6 +434,7 @@ TEST_CASE("KthLargest - correctness", "[heap][kthlargest][correctness]")
 
 TEST_CASE("KthLargest - edge cases", "[heap][kthlargest][correctness]")
 {
+	DSALog::info("[heap] KthLargest edge cases");
 	Heap::KthLargestHeap algo;
 
 	SECTION("single element, k=1")
@@ -454,6 +460,7 @@ TEST_CASE("KthLargest - edge cases", "[heap][kthlargest][correctness]")
 // =============================================================================
 TEST_CASE("MedianFinder - heap matches sort baseline", "[heap][medianfinder][correctness]")
 {
+	DSALog::info("[heap] MedianFinder correctness");
 	Heap::MedianFinderHeap heap_algo;
 	Heap::MedianFinderSort sort_algo;
 
@@ -488,7 +495,7 @@ TEST_CASE("MedianFinder - heap matches sort baseline", "[heap][medianfinder][cor
 
 	SECTION("sorted input")
 	{
-		auto input = sorted_vec(99);  // 0..98, median = 49
+		auto input = sorted_vec(99);
 		REQUIRE(heap_algo.run(input) == Catch::Approx(sort_algo.run(input)));
 	}
 
@@ -507,8 +514,7 @@ TEST_CASE("Heap - data structure benchmarks", "[heap][benchmark][!benchmark]")
 	auto r1k  = random_vec(1000);
 	auto r10k = random_vec(10000);
 
-	// --- MaxHeap: build via push-one-by-one vs heapify constructor ---------------
-	BENCHMARK("MaxHeap  pushX1k (one-by-one)")
+	BENCHMARK("MaxHeap  push×1k (one-by-one)")
 	{
 		Heap::MaxHeap<int> h;
 		for (int x : r1k) h.push(x);
@@ -519,7 +525,7 @@ TEST_CASE("Heap - data structure benchmarks", "[heap][benchmark][!benchmark]")
 		Heap::MaxHeap<int> h(r1k);
 		return h.top();
 	};
-	BENCHMARK("MinHeap  pushX1k (one-by-one)")
+	BENCHMARK("MinHeap  push×1k (one-by-one)")
 	{
 		Heap::MinHeap<int> h;
 		for (int x : r1k) h.push(x);
@@ -531,66 +537,20 @@ TEST_CASE("Heap - data structure benchmarks", "[heap][benchmark][!benchmark]")
 		return h.top();
 	};
 
-	// --- TopK: heap O(n log k) vs full sort O(n log n) ---------------------------
-	// When k is tiny the heap dominates; as k→n they converge.
-	BENCHMARK("TopK heap  n=10k k=10")
-	{
-		return Heap::TopKElements{}.run({r10k, 10});
-	};
-	BENCHMARK("TopK sort  n=10k k=10")
-	{
-		return Heap::TopKSort{}.run({r10k, 10});
-	};
-	BENCHMARK("TopK heap  n=10k k=100")
-	{
-		return Heap::TopKElements{}.run({r10k, 100});
-	};
-	BENCHMARK("TopK sort  n=10k k=100")
-	{
-		return Heap::TopKSort{}.run({r10k, 100});
-	};
-	BENCHMARK("TopK heap  n=10k k=5000")
-	{
-		return Heap::TopKElements{}.run({r10k, 5000});
-	};
-	BENCHMARK("TopK sort  n=10k k=5000")
-	{
-		return Heap::TopKSort{}.run({r10k, 5000});
-	};
+	BENCHMARK("TopK heap  n=10k k=10")   { return Heap::TopKElements{}.run({r10k, 10}); };
+	BENCHMARK("TopK sort  n=10k k=10")   { return Heap::TopKSort{}.run({r10k, 10}); };
+	BENCHMARK("TopK heap  n=10k k=100")  { return Heap::TopKElements{}.run({r10k, 100}); };
+	BENCHMARK("TopK sort  n=10k k=100")  { return Heap::TopKSort{}.run({r10k, 100}); };
+	BENCHMARK("TopK heap  n=10k k=5000") { return Heap::TopKElements{}.run({r10k, 5000}); };
+	BENCHMARK("TopK sort  n=10k k=5000") { return Heap::TopKSort{}.run({r10k, 5000}); };
 
-	// --- KthLargest: heap O(n log k) vs nth_element O(n) -------------------------
-	BENCHMARK("KthLargest heap  n=10k k=10")
-	{
-		return Heap::KthLargestHeap{}.run({r10k, 10});
-	};
-	BENCHMARK("KthLargest nth   n=10k k=10")
-	{
-		return Heap::KthLargestNth{}.run({r10k, 10});
-	};
-	BENCHMARK("KthLargest heap  n=10k k=5000")
-	{
-		return Heap::KthLargestHeap{}.run({r10k, 5000});
-	};
-	BENCHMARK("KthLargest nth   n=10k k=5000")
-	{
-		return Heap::KthLargestNth{}.run({r10k, 5000});
-	};
+	BENCHMARK("KthLargest heap  n=10k k=10")   { return Heap::KthLargestHeap{}.run({r10k, 10}); };
+	BENCHMARK("KthLargest nth   n=10k k=10")   { return Heap::KthLargestNth{}.run({r10k, 10}); };
+	BENCHMARK("KthLargest heap  n=10k k=5000") { return Heap::KthLargestHeap{}.run({r10k, 5000}); };
+	BENCHMARK("KthLargest nth   n=10k k=5000") { return Heap::KthLargestNth{}.run({r10k, 5000}); };
 
-	// --- MedianFinder: two-heap vs sort ------------------------------------------
-	BENCHMARK("MedianFinder heap  n=1k")
-	{
-		return Heap::MedianFinderHeap{}.run(r1k);
-	};
-	BENCHMARK("MedianFinder sort  n=1k")
-	{
-		return Heap::MedianFinderSort{}.run(r1k);
-	};
-	BENCHMARK("MedianFinder heap  n=10k")
-	{
-		return Heap::MedianFinderHeap{}.run(r10k);
-	};
-	BENCHMARK("MedianFinder sort  n=10k")
-	{
-		return Heap::MedianFinderSort{}.run(r10k);
-	};
+	BENCHMARK("MedianFinder heap  n=1k")  { return Heap::MedianFinderHeap{}.run(r1k); };
+	BENCHMARK("MedianFinder sort  n=1k")  { return Heap::MedianFinderSort{}.run(r1k); };
+	BENCHMARK("MedianFinder heap  n=10k") { return Heap::MedianFinderHeap{}.run(r10k); };
+	BENCHMARK("MedianFinder sort  n=10k") { return Heap::MedianFinderSort{}.run(r10k); };
 }

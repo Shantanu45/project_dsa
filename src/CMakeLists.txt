@@ -8,6 +8,9 @@ add_executable(dsa main.cpp
     algo/graph.h
     algo/dp.h
     algo/heap.h
+    algo/trie.h
+    algo/linked_list.h
+    algo/tree.h
 )
 
 target_link_libraries(

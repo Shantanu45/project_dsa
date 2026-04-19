@@ -411,4 +411,110 @@ class MedianFinderSort : public Algorithm<Vec, double>
 	std::string description() const override { return "O(n log n) sort-then-index baseline"; }
 };
 
+// =============================================================================
+//  IndexedMinHeap  -  Priority queue with O(log n) decrease-key
+// =============================================================================
+/**
+ * A plain MinHeap can't efficiently update an arbitrary element's priority
+ * because it doesn't know where that element sits in the heap array.
+ *
+ * IndexedMinHeap maintains a position map  pos_[id] → heap index, so
+ * decrease_key can locate the entry in O(1) and sift it up in O(log n).
+ *
+ * This is the data structure needed for optimal Dijkstra and Prim's MST:
+ *   - Without it: push duplicates, O((V + E) log E) total
+ *   - With it:    decrease_key in place, O((V + E) log V) total
+ *
+ * API
+ *   push(id, priority)          O(log n)  — insert or decrease if already present
+ *   pop_min()                   O(log n)  — remove and return {id, priority} of min
+ *   decrease_key(id, priority)  O(log n)  — update priority downward (no-op if higher)
+ *   peek_min()                  O(1)
+ *   contains(id)                O(1)
+ *
+ * Valid IDs: integers in [0, max_id).
+ */
+class IndexedMinHeap
+{
+	struct Entry { int id, priority; };
+	std::vector<Entry> heap_;
+	std::vector<int>   pos_;  // pos_[id] = index in heap_, or -1 if absent
+
+	void _swap(int i, int j)
+	{
+		pos_[heap_[i].id] = j;
+		pos_[heap_[j].id] = i;
+		std::swap(heap_[i], heap_[j]);
+	}
+
+	void _sift_up(int i)
+	{
+		while (i > 0)
+		{
+			int p = (i - 1) / 2;
+			if (heap_[p].priority <= heap_[i].priority) break;
+			_swap(p, i);
+			i = p;
+		}
+	}
+
+	void _sift_down(int i)
+	{
+		int n = (int)heap_.size();
+		while (true)
+		{
+			int s = i;
+			int l = 2 * i + 1, r = 2 * i + 2;
+			if (l < n && heap_[l].priority < heap_[s].priority) s = l;
+			if (r < n && heap_[r].priority < heap_[s].priority) s = r;
+			if (s == i) break;
+			_swap(i, s);
+			i = s;
+		}
+	}
+
+   public:
+	explicit IndexedMinHeap(int max_id) : pos_(max_id, -1) {}
+
+	// Insert with priority, or decrease_key if id already present.
+	void push(int id, int priority)
+	{
+		if (contains(id)) { decrease_key(id, priority); return; }
+		pos_[id] = (int)heap_.size();
+		heap_.push_back({id, priority});
+		_sift_up(pos_[id]);
+	}
+
+	// Remove and return {id, priority} of the minimum-priority element.
+	std::pair<int, int> pop_min()
+	{
+		if (heap_.empty()) throw std::out_of_range("IndexedMinHeap is empty");
+		Entry top = heap_[0];
+		_swap(0, (int)heap_.size() - 1);
+		pos_[top.id] = -1;
+		heap_.pop_back();
+		if (!heap_.empty()) _sift_down(0);
+		return {top.id, top.priority};
+	}
+
+	// Lower an existing element's priority.  No-op if new_priority >= current.
+	void decrease_key(int id, int new_priority)
+	{
+		if (!contains(id)) throw std::invalid_argument("id not in heap");
+		if (new_priority >= heap_[pos_[id]].priority) return;
+		heap_[pos_[id]].priority = new_priority;
+		_sift_up(pos_[id]);
+	}
+
+	std::pair<int, int> peek_min() const
+	{
+		if (heap_.empty()) throw std::out_of_range("IndexedMinHeap is empty");
+		return {heap_[0].id, heap_[0].priority};
+	}
+
+	bool contains(int id) const { return id >= 0 && id < (int)pos_.size() && pos_[id] != -1; }
+	bool empty()          const { return heap_.empty(); }
+	int  size()           const { return (int)heap_.size(); }
+};
+
 }  // namespace Heap
