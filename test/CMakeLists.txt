@@ -40,7 +40,12 @@ add_executable(tests
     test_heap.cpp
     test_trie.cpp
     test_linked_list.cpp
-    test_tree.cpp)
+    test_tree.cpp
+    test_string_algo.cpp
+    test_segment_tree.cpp
+    test_monotonic_queue.cpp
+    test_hash_table.cpp
+)
 
 target_link_libraries(
   tests

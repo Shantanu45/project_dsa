@@ -11,6 +11,11 @@ add_executable(dsa main.cpp
     algo/trie.h
     algo/linked_list.h
     algo/tree.h
+    algo/hash_table.h
+    algo/bit_manip.h
+    algo/string_algo.h
+    algo/segment_tree.h
+    algo/monotonic_queue.h
 )
 
 target_link_libraries(
