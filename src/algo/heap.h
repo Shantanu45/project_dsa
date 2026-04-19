@@ -36,10 +36,10 @@ class MaxHeap
 	{
 		while (i > 0)
 		{
-			int p = (i - 1) / 2;
-			if (data_[p] >= data_[i]) break;
-			std::swap(data_[p], data_[i]);
-			i = p;
+			int p = (i - 1) / 2;		// Parent
+			if (data_[p] >= data_[i]) break;		// If parent is already bigger, we are done!
+			std::swap(data_[p], data_[i]);			// Otherwise, swap child and parent
+			i = p;									// Move our focus up to the parent's old position
 		}
 	}
 
@@ -67,6 +67,7 @@ class MaxHeap
 	// provably O(n) because most nodes are near the leaves and travel little.
 	explicit MaxHeap(std::vector<T> v) : data_(std::move(v))
 	{
+        // (size / 2 - 1) is the index of the last parent node
 		for (int i = (int)data_.size() / 2 - 1; i >= 0; --i)
 			sift_down(i);
 	}
