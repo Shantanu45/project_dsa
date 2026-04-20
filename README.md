@@ -86,6 +86,11 @@ test/              # Catch2 correctness tests + BENCHMARK blocks
 docs/              # Doxygen config and markdown pages
 ```
 
+## Acknowledgements
+
+Project structure and CMake configuration based on
+[cpp-best-practices/cmake_template](https://github.com/cpp-best-practices/cmake_template).
+
 ## Author
 
 Shantanu Kumar — April 2026
