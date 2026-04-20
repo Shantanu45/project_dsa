@@ -68,9 +68,13 @@ class MaxHeap
    public:
 	MaxHeap() = default;
 
-	// Build heap from an existing array in O(n) via Floyd's algorithm.
-	// Starts from the last internal node and sifts each one down — this is
-	// provably O(n) because most nodes are near the leaves and travel little.
+	/**
+	 * Build heap from an existing array in O(n) via Floyd's algorithm.
+	 * Starts from the last internal node and sifts each one down — this is
+	 * provably O(n) because most nodes are near the leaves and travel little.
+	 * 
+	 * \param v
+	 */
 	explicit MaxHeap(std::vector<T> v) : data_(std::move(v))
 	{
         // (size / 2 - 1) is the index of the last parent node
@@ -84,7 +88,11 @@ class MaxHeap
 		sift_up((int)data_.size() - 1);			// restore order
 	}
 
-	// Remove and return the maximum element.
+	/**
+	 * Remove and return the maximum element.
+	 * 
+	 * \return 
+	 */
 	T pop()
 	{
 		if (data_.empty()) throw std::out_of_range("MaxHeap is empty");
@@ -104,7 +112,11 @@ class MaxHeap
 	bool   empty() const { return data_.empty(); }
 	size_t size()  const { return data_.size(); }
 
-	// Repeatedly pop to get elements in ascending order.
+	/**
+	 * Repeatedly pop to get elements in ascending order.
+	 * 
+	 * \return 
+	 */
 	std::vector<T> drain_sorted()
 	{
 		std::vector<T> out;
