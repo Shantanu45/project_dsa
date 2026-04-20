@@ -1,4 +1,6 @@
 docs/
+!docs/Doxyfile
+!docs/*.md
 
 # Build directories and binary files
 build/
