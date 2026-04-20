@@ -553,4 +553,107 @@ TEST_CASE("Heap - data structure benchmarks", "[heap][benchmark][!benchmark]")
 	BENCHMARK("MedianFinder sort  n=1k")  { return Heap::MedianFinderSort{}.run(r1k); };
 	BENCHMARK("MedianFinder heap  n=10k") { return Heap::MedianFinderHeap{}.run(r10k); };
 	BENCHMARK("MedianFinder sort  n=10k") { return Heap::MedianFinderSort{}.run(r10k); };
+
+	BENCHMARK("IndexedMinHeap push+pop_min 1k")
+	{
+		Heap::IndexedMinHeap h(1000);
+		for (int i = 0; i < 1000; ++i) h.push(i, r1k[i]);
+		int sum = 0;
+		while (!h.empty()) sum += h.pop_min().second;
+		return sum;
+	};
+}
+
+// =============================================================================
+//  IndexedMinHeap
+// =============================================================================
+TEST_CASE("IndexedMinHeap - basic operations", "[heap][indexedminheap][correctness]")
+{
+	SECTION("empty heap throws on peek and pop")
+	{
+		Heap::IndexedMinHeap h(5);
+		REQUIRE(h.empty());
+		REQUIRE_THROWS_AS(h.peek_min(), std::out_of_range);
+		REQUIRE_THROWS_AS(h.pop_min(), std::out_of_range);
+	}
+	SECTION("push and peek_min")
+	{
+		Heap::IndexedMinHeap h(5);
+		h.push(2, 10);
+		h.push(0, 5);
+		h.push(4, 20);
+		REQUIRE(h.peek_min().first  == 0);
+		REQUIRE(h.peek_min().second == 5);
+		REQUIRE(h.size() == 3);
+	}
+	SECTION("pop_min returns elements in priority order")
+	{
+		Heap::IndexedMinHeap h(5);
+		h.push(0, 30);
+		h.push(1, 10);
+		h.push(2, 20);
+		auto [id1, p1] = h.pop_min(); REQUIRE(p1 == 10);
+		auto [id2, p2] = h.pop_min(); REQUIRE(p2 == 20);
+		auto [id3, p3] = h.pop_min(); REQUIRE(p3 == 30);
+		REQUIRE(h.empty());
+	}
+	SECTION("decrease_key moves element up")
+	{
+		Heap::IndexedMinHeap h(4);
+		h.push(0, 100);
+		h.push(1, 50);
+		h.push(2, 75);
+		h.decrease_key(0, 10);   // id 0 should now be the min
+		REQUIRE(h.peek_min().first == 0);
+		REQUIRE(h.peek_min().second == 10);
+	}
+	SECTION("decrease_key is no-op when new priority is not lower")
+	{
+		Heap::IndexedMinHeap h(3);
+		h.push(0, 5);
+		h.push(1, 10);
+		h.decrease_key(0, 99);   // not a decrease
+		REQUIRE(h.peek_min().first  == 0);
+		REQUIRE(h.peek_min().second == 5);
+	}
+	SECTION("decrease_key on absent id throws")
+	{
+		Heap::IndexedMinHeap h(5);
+		h.push(0, 10);
+		REQUIRE_THROWS_AS(h.decrease_key(3, 1), std::invalid_argument);
+	}
+	SECTION("push with existing id acts as decrease_key")
+	{
+		Heap::IndexedMinHeap h(4);
+		h.push(0, 50);
+		h.push(1, 20);
+		h.push(0, 5);   // re-push with lower priority
+		REQUIRE(h.peek_min().first  == 0);
+		REQUIRE(h.peek_min().second == 5);
+		REQUIRE(h.size() == 2);   // no duplicate entry
+	}
+	SECTION("contains reflects presence correctly")
+	{
+		Heap::IndexedMinHeap h(5);
+		REQUIRE_FALSE(h.contains(0));
+		h.push(0, 1);
+		REQUIRE(h.contains(0));
+		h.pop_min();
+		REQUIRE_FALSE(h.contains(0));
+	}
+}
+
+TEST_CASE("IndexedMinHeap - pop order matches sorted priorities", "[heap][indexedminheap][property]")
+{
+	const int N = 200;
+	Heap::IndexedMinHeap h(N);
+	std::vector<int> priorities(N);
+	for (int i = 0; i < N; ++i) { priorities[i] = (i * 31337) % 997; h.push(i, priorities[i]); }
+
+	std::vector<int> popped_priorities;
+	while (!h.empty()) popped_priorities.push_back(h.pop_min().second);
+
+	std::vector<int> expected = priorities;
+	std::sort(expected.begin(), expected.end());
+	REQUIRE(popped_priorities == expected);
 }

@@ -45,6 +45,7 @@ add_executable(tests
     test_segment_tree.cpp
     test_monotonic_queue.cpp
     test_hash_table.cpp
+    test_bit_manip.cpp
 )
 
 target_link_libraries(

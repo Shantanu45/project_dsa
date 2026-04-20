@@ -86,6 +86,66 @@ TEST_CASE("LCS property - length bound", "[dp][lcs][property]")
 	}
 }
 
+// --- LIS ----------------------------------------------------------------------
+TEST_CASE("LIS - correctness", "[dp][lis][correctness]")
+{
+	DP::LISNaive      naive;
+	DP::LISBinarySearch fast;
+
+	auto check = [&](std::vector<int> v, int expected) {
+		REQUIRE(naive.run(v) == expected);
+		REQUIRE(fast.run(v)  == expected);
+	};
+
+	check({10, 9, 2, 5, 3, 7, 101, 18},  4);  // classic: 2,3,7,101
+	check({0, 1, 0, 3, 2, 3},            4);  // 0,1,2,3
+	check({7, 7, 7, 7},                  1);  // all equal → strictly increasing = 1
+	check({1, 2, 3, 4, 5},               5);  // already sorted
+	check({5, 4, 3, 2, 1},               1);  // reverse sorted
+	check({},                            0);  // empty
+	check({42},                          1);  // single element
+}
+
+TEST_CASE("LIS property - result in [0, n]", "[dp][lis][property]")
+{
+	DP::LISNaive      naive;
+	DP::LISBinarySearch fast;
+	std::vector<std::vector<int>> cases = {{1,3,2,4}, {5,5,5}, {1,2,3}, {3,1,2}};
+	for (auto& v : cases)
+	{
+		int r1 = naive.run(v), r2 = fast.run(v);
+		REQUIRE(r1 == r2);
+		REQUIRE(r1 >= 0);
+		REQUIRE(r1 <= (int)v.size());
+	}
+}
+
+// --- Matrix Chain Multiplication ----------------------------------------------
+TEST_CASE("MatrixChainMult - correctness", "[dp][mcm][correctness]")
+{
+	DP::MatrixChainMult mcm;
+
+	SECTION("3 matrices: 40×20 * 20×30 * 30×10")
+	{
+		// Optimal: (A*B)*C = 40*20*30 + 40*30*10 = 24000+12000 = 36000
+		// Alt:      A*(B*C) = 20*30*10 + 40*20*10 = 6000+8000  = 14000
+		REQUIRE(mcm.run({{40, 20, 30, 10}}) == 14000);
+	}
+	SECTION("4 matrices: 10×30 * 30×5 * 5×60 * 60×1")
+	{
+		REQUIRE(mcm.run({{10, 30, 5, 60, 1}}) == 750);  // A*((BCD)) via A*(B*(CD))
+	}
+	SECTION("single matrix → 0 cost")
+	{
+		REQUIRE(mcm.run({{10, 20}}) == 0);
+	}
+	SECTION("two matrices")
+	{
+		// A: 2×3, B: 3×4  → only one way, cost = 2*3*4 = 24
+		REQUIRE(mcm.run({{2, 3, 4}}) == 24);
+	}
+}
+
 // --- benchmarks ---------------------------------------------------------------
 TEST_CASE("DP benchmarks", "[dp][benchmark][!benchmark]")
 {
