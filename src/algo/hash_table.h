@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   hash_table.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <functional>
 #include <list>
 #include <utility>
@@ -219,6 +225,19 @@ struct MapInput
 };
 using MapOutput = std::vector<int>;
 
+/**
+ * @brief Algorithm wrapper: key-value search using separate-chaining hash map.
+ *
+ * @details
+ * Inserts all (key, value) pairs from MapInput::entries into a ChainingHashMap,
+ * then answers each query by looking up the key.  Returns the associated value,
+ * or -1 for a miss.
+ *
+ * @par Complexity
+ *   Build  O(n) average.   Query  O(1) average, O(n) worst.
+ *   Higher constant than open addressing due to pointer-chasing through linked
+ *   list buckets — each lookup potentially dereferences multiple heap pointers.
+ */
 struct ChainMapSearch : Algorithm<MapInput, MapOutput>
 {
     MapOutput run(const MapInput& in) override
@@ -238,6 +257,20 @@ struct ChainMapSearch : Algorithm<MapInput, MapOutput>
     std::string complexity() const override { return "O(1) avg, pointer-heavy"; }
 };
 
+/**
+ * @brief Algorithm wrapper: key-value search using open-addressing hash map.
+ *
+ * @details
+ * Inserts all entries into an OpenAddressHashMap (linear probing), then answers
+ * each query.  Returns the associated value, or -1 for a miss.
+ *
+ * @par Complexity
+ *   Build  O(n) average.   Query  O(1) average.
+ *   Better cache behaviour than ChainingHashMap: all data lives in one flat
+ *   array, so lookups hit L1/L2 cache much more frequently.
+ *   Tombstones (DELETED slots) can accumulate and slow down probing — periodic
+ *   rehash is triggered at load > 0.5 to keep probe chains short.
+ */
 struct OpenMapSearch : Algorithm<MapInput, MapOutput>
 {
     MapOutput run(const MapInput& in) override

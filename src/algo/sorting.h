@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   sorting.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <algorithm>
 #include <vector>
 #include "dsa_framework/framework.h"
@@ -15,18 +21,35 @@ using Vec = std::vector<int>;
 
 // -- QuickSort ----------------------------------------------------------------
 /**
- * Quick Sort is widely considered one of the most efficient and popular sorting algorithms in computer science. 
- * While its worst-case scenario can be slow, its real-world performance usually beats out competitors like Merge Sort or Heap Sort.
- * 
- * Quick Sort is in-place
- * 
- * Execellent locality of reference. Since it accesses elements sequentially from the ends toward the middle (or linearly through the partition)
- * 
- * Parallelization Potential: because of its Divide and Conquer nature.
- * 
- * Skip when:
- * - Stability is required: If you need to keep elements with equal values in their original relative order, use Merge Sort.
- * - Worst-case protection
+ * @brief In-place divide-and-conquer sort using a partition pivot.
+ *
+ * @details
+ * Lomuto partition scheme (pivot = last element):
+ *   1. Rearrange the subarray so all elements ≤ pivot are on the left,
+ *      all elements > pivot are on the right.  The pivot lands at its final
+ *      sorted position after this step.
+ *   2. Recursively apply to the two sub-partitions.
+ *
+ * The pivot choice (last element) is simple but produces O(n²) behaviour on
+ * already-sorted input.  Production implementations use median-of-three or
+ * random pivot selection to make this astronomically unlikely.
+ *
+ * @par Complexity
+ *   Time  O(n log n) average — each element participates in O(log n) partitions.
+ *   Time  O(n²) worst case  — occurs when pivot is always the min/max
+ *                             (sorted or reverse-sorted input with this scheme).
+ *   Space O(log n) average / O(n) worst — recursion stack depth.
+ *   In-place: no auxiliary array needed.
+ *
+ * @par Advantages
+ *   - Excellent cache locality: accesses elements sequentially within each
+ *     partition, fitting naturally into CPU cache lines.
+ *   - Low constant factor: minimal bookkeeping per comparison.
+ *   - Natural parallelism: sub-partitions are independent.
+ *
+ * @par When to skip
+ *   - Stability required → use MergeSort.
+ *   - Guaranteed worst-case needed → use HeapSort or std::sort (Introsort).
  */
 class QuickSort : public Algorithm<Vec, Vec>
 {
@@ -57,19 +80,34 @@ class QuickSort : public Algorithm<Vec, Vec>
 
 // -- MergeSort ----------------------------------------------------------------
 /**
- * Merge sort is a popular sorting algorithm known for its efficiency and stability. It follows the Divide and Conquer approach. 
- * It works by recursively dividing the input array into two halves, recursively sorting the two halves and finally merging them back together to obtain the sorted array.
- * 
- * Divide and Conquer algorithm
- * 
- * Space complexity O(n): This is its main drawback
- * 
- * Benefits:
- * - Stability: Yes. Merge Sort preserves the relative order of equal elements, which is vital when sorting complex data (like sorting a list of people by "Last Name" then "First Name" or Sorting logs by "Severity Level," but keeping them in their original "Timestamp" order within those levels.).
- * - Predictable Performance: Merge Sort does not have a "worst-case" scenario based on data arrangement.
- * - External Sorting: Merge Sort is the king of data that is too big to fit in RAM.
- * - Perfect for Linked Lists (std::list::sort actually uses Merge Sort): Linked lists don't allow "random access" (you can't jump to index 500 instantly).
- * - Parallelization
+ * @brief Stable divide-and-conquer sort with guaranteed O(n log n).
+ *
+ * @details
+ * Recursive top-down variant with a shared auxiliary buffer allocated once:
+ *   1. Divide: split [lo, hi] at mid = lo + (hi-lo)/2.
+ *   2. Conquer: recursively sort [lo, mid] and [mid+1, hi].
+ *   3. Merge: two-pointer merge of the two sorted halves into aux[lo..hi],
+ *      then copy back.  The ≤ comparison in the merge preserves stability.
+ *
+ * The auxiliary array is allocated once at the top level and shared across
+ * all recursive calls — avoiding O(n log n) total allocations.
+ *
+ * @par Complexity
+ *   Time  O(n log n) — always, regardless of input order.
+ *   Space O(n)       — auxiliary array for merging (main drawback).
+ *
+ * @par Advantages
+ *   - Stable: equal elements preserve their original relative order.
+ *   - Predictable: no worst-case degradation unlike QuickSort.
+ *   - Optimal for linked lists: merging singly-linked lists needs no extra
+ *     memory and no random access.
+ *   - External sorting: can merge sorted chunks that don't fit in RAM by
+ *     streaming from disk (e.g. sort 1 TB with 1 GB RAM).
+ *   - Parallelisable: sub-problems are fully independent.
+ *
+ * @par When to skip
+ *   - Memory is tight → use HeapSort (O(1) extra space).
+ *   - Raw speed on cache-friendly data → QuickSort often faster in practice.
  */
 class MergeSort : public Algorithm<Vec, Vec>
 {
@@ -81,14 +119,11 @@ class MergeSort : public Algorithm<Vec, Vec>
     ms(v, aux, lo, mid);
     ms(v, aux, mid + 1, hi);
 
-    // MERGE STEP using the 'aux' scratchpad
+    // Merge the two sorted halves into aux, then copy back.
     int i = lo, j = mid + 1, k = lo;
-
     while (i <= mid && j <= hi) aux[k++] = (v[i] <= v[j]) ? v[i++] : v[j++];
     while (i <= mid) aux[k++] = v[i++];
     while (j <= hi) aux[k++] = v[j++];
-
-    // Copy back from aux to original
     for (int x = lo; x <= hi; ++x) v[x] = aux[x];
   }
 
@@ -97,7 +132,6 @@ public:
   {
     Vec v = input;
     if (!v.empty()) {
-      // Create the scratchpad once!
       Vec aux(v.size());
       ms(v, aux, 0, (int)v.size() - 1);
     }
@@ -109,19 +143,41 @@ public:
 
 // -- HeapSort -----------------------------------------------------------------
 /**
- * Heap Sort is a comparison-based sorting algorithm that uses a specific data structure called a Binary Heap (like Max heap or Min heap) to manage elements. 
- * If Merge Sort is "split and zip," and Quick Sort is "partitioning," then Heap Sort is "rank and extract."
- * 
- * It is essentially a more sophisticated version of Selection Sort
- * 
- * Benefit: 
- * - Guaranteed Performance: Unlike Quick Sort, which can fail to O(n2) if the pivot is bad, Heap Sort always finishes in O(nlogn).
- * - Memory Efficient: It doesn't use recursion (so no stack overflow risk) and requires zero extra memory (unlike Merge Sort).
- * - The "Top K" Advantage: If you only need the top 10 largest elements from a list of a billion, you don't need to sort the whole thing. You just "Heapify" and extract 10 times, making it incredibly efficient for priority-based tasks.
- * 
- * Drawback:
- * On average, it is usually slower than Quick Sort because the way it moves through memory (jumping from parent to child) isn't as "cache-friendly" for the CPU.
- * 
+ * @brief In-place sort using a binary max-heap.
+ *
+ * @details
+ * Two-phase algorithm, both phases use the sift-down (heapify) subroutine:
+ *
+ *   Phase 1 – Heapify (O(n)):
+ *     Build a max-heap in-place using Floyd's bottom-up algorithm.
+ *     Start from the last internal node (index n/2 - 1) and sift each node
+ *     down.  This is O(n) — provably fewer comparisons than n individual
+ *     pushes because most nodes are near the leaves and travel very little.
+ *
+ *   Phase 2 – Extract-sort (O(n log n)):
+ *     Repeatedly swap the heap root (the current maximum) with the last
+ *     element of the unsorted region, then sift-down the new root to restore
+ *     the heap property over the remaining n-1 elements.
+ *     Each extraction costs O(log n), so n extractions = O(n log n) total.
+ *
+ * The net effect: after Phase 2, the array is sorted ascending in-place.
+ *
+ * @par Complexity
+ *   Time  O(n log n) — guaranteed, no bad pivot scenarios.
+ *   Space O(1)       — purely in-place; no recursion stack (iterative sift-down).
+ *   Not stable.
+ *
+ * @par Advantages
+ *   - Guaranteed O(n log n) with O(1) extra space — best of both worlds vs
+ *     QuickSort (bad worst case) and MergeSort (O(n) space).
+ *   - No stack-overflow risk: iterative inner loop.
+ *   - Useful for "top-k" extraction: heapify once, extract k times in O(n + k log n).
+ *
+ * @par Drawbacks
+ *   - Poor cache locality: sift-down jumps between parent and child indices
+ *     (non-sequential memory access), causing frequent cache misses.
+ *   - In practice slower than QuickSort and often slower than MergeSort on
+ *     modern hardware despite the same asymptotic bound.
  */
 class HeapSort : public Algorithm<Vec, Vec>
 {
@@ -157,22 +213,43 @@ class HeapSort : public Algorithm<Vec, Vec>
 	std::string description() const override { return "O(n log n) in-place, not stable"; }
 };
 
-// -- InsertionSort -----------------------------------------------------------------
+// -- InsertionSort ------------------------------------------------------------
 /**
- * Insertion sort is a simple sorting algorithm that works by iteratively inserting each element of an unsorted list into its correct position in a sorted portion of the list. 
- * It is like sorting playing cards in your hands.
- * 
- * Benefits:
- * - High Performance on "Nearly Sorted" Data : Insertion Sort is an adaptive algorithm. If the data is already sorted (or mostly sorted), it only does one comparison per element and moves on.
- * - Extremely Low Overhead: simple while loop with almost no setup.
- * - It is "Online": Insertion Sort can sort data as it receives it.
- * - Stability and In-Place Sorting
- * - Memory/Cache Efficiency
+ * @brief Stable sort that builds the sorted output one element at a time.
+ *
+ * @details
+ * Analogous to sorting a hand of playing cards:
+ *   For each element at index i (starting from i=1):
+ *     1. Save the element as 'key'.
+ *     2. Shift all elements to its left that are greater than key one position
+ *        to the right, opening a gap.
+ *     3. Insert key into the gap.
+ *
+ * After processing index i, arr[0..i] is sorted — the sorted prefix grows
+ * by one element each iteration.
+ *
+ * @par Complexity
+ *   Time  O(n²) worst/average — occurs on reverse-sorted input (every element
+ *          shifts the entire prefix).
+ *   Time  O(n) best case      — already-sorted input: no shifts needed (1
+ *          comparison per element).  The algorithm is adaptive: proportional
+ *          to the number of inversions, which is 0 for a sorted array.
+ *   Space O(1) — in-place.
+ *   Stable.
+ *
+ * @par Advantages
+ *   - Fastest of all O(n²) sorts for nearly-sorted or small (n < ~20) input.
+ *   - Online: can sort a stream one element at a time without seeing all data first.
+ *   - Extremely low overhead: just comparisons and shifts, no division or allocation.
+ *   - Used as the small-subarray routine inside Introsort (std::sort) and Timsort.
+ *
+ * @par When to skip
+ *   Large arrays that are not already nearly sorted.
  */
 class InsertionSort : public Algorithm<Vec, Vec>
 {
   void is(Vec &v) {
-    for (int i = 1; i < v.size(); i++) {
+    for (int i = 1; i < (int)v.size(); i++) {
       int key = v[i];
       int j = i - 1;
       while (j >= 0 && v[j] > key) {
@@ -183,7 +260,7 @@ class InsertionSort : public Algorithm<Vec, Vec>
     }
   }
 
-public: 
+public:
 	Vec run(const Vec& input) override
 	{
         Vec v = input;
@@ -197,12 +274,29 @@ public:
 
 // -- std::sort wrapper (reference baseline) -----------------------------------
 /**
- * std::sort uses hybrid algorithm Introsort (introspective sort).
- * How it works: 
- * 1. It starts with Quick Sort.
- * 2. If the recursion depth gets too deep (risking O(n2)), it switches to Heap Sort.
- * 3. For very small arrays (e.g., < 16 elements), it switches to Insertion Sort.
- * 
+ * @brief Introsort hybrid: QuickSort + HeapSort + InsertionSort.
+ *
+ * @details
+ * std::sort in most standard library implementations uses Introsort
+ * (introspective sort), a three-way hybrid that avoids each component's
+ * weakness:
+ *
+ *   1. QuickSort by default — fast in practice, excellent cache behaviour.
+ *   2. Switches to HeapSort if the recursion depth exceeds 2*log₂(n) —
+ *      guarantees O(n log n) worst case even on adversarial pivot inputs.
+ *   3. Falls back to InsertionSort for sub-arrays of size ≤ ~16 — minimises
+ *      overhead for tiny ranges where recursive calls dominate.
+ *
+ * Not guaranteed to be stable (use std::stable_sort for that).
+ *
+ * @par Complexity
+ *   Time  O(n log n) guaranteed.
+ *   Space O(log n) — recursion stack.
+ *   Not stable (implementation-defined).
+ *
+ * @par When to use
+ *   Default choice for general-purpose sorting.  Use this as the performance
+ *   baseline against which other sorting algorithms are compared.
  */
 class StdSort : public Algorithm<Vec, Vec>
 {

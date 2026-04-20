@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   linked_list.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
@@ -187,6 +193,17 @@ class ListReverse : public Algorithm<Vec, Vec>
 	std::string complexity()  const override { return "O(n) time, O(1) extra space"; }
 };
 
+/**
+ * @brief Array reverse using std::reverse — O(n), cache-friendly baseline.
+ *
+ * @details
+ * Reverses a copy of the input vector with std::reverse, which swaps elements
+ * from both ends toward the middle.  Contiguous memory access gives excellent
+ * cache performance — typically faster than linked-list reversal in practice
+ * despite the same O(n) / O(1) complexity on paper.
+ *
+ * @par Complexity   O(n) time, O(1) extra space (ignoring the output copy).
+ */
 class ArrayReverse : public Algorithm<Vec, Vec>
 {
    public:
@@ -236,6 +253,17 @@ class ListMergeSorted : public Algorithm<MergeInput, Vec>
 	std::string complexity()  const override { return "O(m+n) time, O(1) extra space"; }
 };
 
+/**
+ * @brief Merge two sorted sequences using std::merge — O(m+n) cache-friendly baseline.
+ *
+ * @details
+ * Delegates to std::merge which performs the standard two-pointer merge into
+ * a back-inserter result vector.  Random-access iterators over contiguous
+ * memory allow the compiler to vectorise the comparison loop, making this
+ * faster than ListMergeSorted in practice despite identical asymptotic bounds.
+ *
+ * @par Complexity   O(m+n) time, O(m+n) space (output vector).
+ */
 class ArrayMergeSorted : public Algorithm<MergeInput, Vec>
 {
    public:

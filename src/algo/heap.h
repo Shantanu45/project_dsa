@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   heap.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
@@ -308,6 +314,18 @@ class TopKElements : public Algorithm<TopKInput, Vec>
 };
 
 // -- TopKSort: full-sort baseline ---------------------------------------------
+/**
+ * @brief Top-K elements via full sort — O(n log n) baseline.
+ *
+ * @details
+ * Sorts the entire array in descending order, then truncates to the first k
+ * elements.  Simpler and often competitive with the heap approach when k is
+ * close to n, but wastes work sorting elements we discard.
+ *
+ * @par Complexity
+ *   Time  O(n log n) regardless of k.   Space O(n) (copy).
+ *   Use when k ≈ n or when simplicity matters more than optimal constants.
+ */
 class TopKSort : public Algorithm<TopKInput, Vec>
 {
    public:
@@ -360,6 +378,23 @@ class KthLargestHeap : public Algorithm<KthInput, int>
 };
 
 // -- KthLargestNth: std::nth_element baseline ---------------------------------
+/**
+ * @brief Kth-largest element via std::nth_element — O(n) average baseline.
+ *
+ * @details
+ * std::nth_element uses introselect (a hybrid of quickselect and median-of-
+ * medians) to partially sort the array so that the element at position
+ * (n - k) is the Kth-largest value, elements before it are all ≤ it, and
+ * elements after are all ≥ it.  Only a single element is placed correctly.
+ *
+ * @par Complexity
+ *   Time  O(n) average, O(n²) worst case (rare with introselect).
+ *   Space O(1) extra — in-place rearrangement on a copy.
+ *
+ * @par When to prefer over KthLargestHeap
+ *   Offline / bulk scenario (full array known in advance, k is fixed).
+ *   KthLargestHeap wins in streaming contexts where k is small and n is huge.
+ */
 class KthLargestNth : public Algorithm<KthInput, int>
 {
    public:
@@ -399,6 +434,22 @@ class MedianFinderHeap : public Algorithm<Vec, double>
 	std::string complexity()  const override { return "O(n log n), Space O(n)"; }
 };
 
+/**
+ * @brief Static array median via sort-then-index — O(n log n) baseline.
+ *
+ * @details
+ * Sorts a copy of the input array, then picks the middle element(s):
+ *   - Odd n  → arr[n/2].
+ *   - Even n → average of arr[n/2-1] and arr[n/2].
+ *
+ * Better constant factor than MedianFinderHeap for a static array because
+ * std::sort exploits cache-friendly sequential access patterns.  Use this as
+ * the correctness-and-performance baseline; MedianFinderHeap is only faster
+ * in streaming (online) contexts where the median is needed after every push.
+ *
+ * @par Complexity
+ *   Time  O(n log n).   Space O(n) (copy of input).
+ */
 class MedianFinderSort : public Algorithm<Vec, double>
 {
    public:

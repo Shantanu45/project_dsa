@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   trie.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <algorithm>
 #include <string>
 #include <unordered_set>
@@ -153,6 +159,18 @@ class TrieSearch : public Algorithm<TrieInput, int>
 	std::string complexity()  const override { return "Build O(n*L), Query O(L)"; }
 };
 
+/**
+ * @brief Algorithm wrapper: exact-match search using std::unordered_set (hash baseline).
+ *
+ * @details
+ * Builds an unordered_set from the dictionary, then counts how many queries
+ * match.  O(L) per query on average (hash computation + single lookup), with
+ * no support for prefix queries.  Serves as the hash-table performance baseline
+ * against which the Trie is benchmarked.
+ *
+ * @par Complexity
+ *   Build  O(n × L) average.   Query  O(L) average.
+ */
 class HashSetSearch : public Algorithm<TrieInput, int>
 {
    public:
@@ -196,6 +214,21 @@ class TriePrefixCount : public Algorithm<PrefixInput, int>
 	std::string complexity()  const override { return "O(L + k), k = matching words"; }
 };
 
+/**
+ * @brief Prefix count — O(n × L) linear scan baseline.
+ *
+ * @details
+ * Iterates over every word in the dictionary and checks whether it starts with
+ * the given prefix using std::string::rfind(prefix, 0) == 0 (a clean way to
+ * test "starts with" without allocating a substring).
+ *
+ * Simple and correct; use to validate TriePrefixCount.  The O(n × L) cost
+ * becomes prohibitive for large dictionaries, illustrating exactly where the
+ * Trie's O(L + k) prefix query shines.
+ *
+ * @par Complexity
+ *   O(n × L) per query — scans all n words, compares up to L characters each.
+ */
 class LinearPrefixCount : public Algorithm<PrefixInput, int>
 {
    public:

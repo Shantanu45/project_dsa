@@ -1,4 +1,11 @@
-#pragma once
+/*****************************************************************//**
+ * \file   graph.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
+
 #include <limits>
 #include <numeric>
 #include <queue>

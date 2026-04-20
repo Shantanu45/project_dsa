@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   searching.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <vector>
 #include "dsa_framework/framework.h"
 
@@ -19,6 +25,33 @@ struct SearchInput
 using SAlgo = Algorithm<SearchInput, int>;
 
 // -- Binary Search -------------------------------------------------------------
+/**
+ * @brief Iterative binary search on a sorted array.
+ *
+ * @details
+ * Repeatedly halves the search interval by comparing the target against the
+ * midpoint element:
+ *   - If arr[mid] == target  → found, return mid.
+ *   - If arr[mid] <  target  → target must be in the right half (lo = mid+1).
+ *   - If arr[mid] >  target  → target must be in the left half  (hi = mid-1).
+ * The interval collapses to empty (lo > hi) when the target is absent.
+ *
+ * Mid is computed as lo + (hi-lo)/2 rather than (lo+hi)/2 to avoid signed
+ * integer overflow when lo and hi are both large.
+ *
+ * @par Complexity
+ *   Time  O(log n) — interval halves each iteration.
+ *   Space O(1)     — iterative; no recursion stack.
+ *
+ * @par Precondition
+ *   arr must be sorted in non-decreasing order.
+ *
+ * @par When to use
+ *   Default first choice for searching in any sorted random-access container.
+ *   Prefer over linear scan for n > ~20.
+ *
+ * @returns Index of target in arr, or -1 if not present.
+ */
 class BinarySearch : public SAlgo
 {
    public:
@@ -42,6 +75,28 @@ class BinarySearch : public SAlgo
 };
 
 // -- Linear Search -------------------------------------------------------------
+/**
+ * @brief Sequential scan from the first element to the last.
+ *
+ * @details
+ * Examines every element in order and returns the index of the first match.
+ * No preconditions on input ordering.
+ *
+ * Despite the poor worst-case complexity, linear search wins in practice for:
+ *   - Very small arrays (n < ~10): no branch mispredictions, no division.
+ *   - Unsorted data where sorting would cost more than a single scan.
+ *   - Linked lists and other non-random-access structures.
+ *
+ * @par Complexity
+ *   Time  O(n) worst case — scans the whole array if target is absent or last.
+ *   Space O(1).
+ *
+ * @par When to use
+ *   Small or unsorted collections, or when a single search is cheaper than
+ *   the O(n log n) cost of sorting first.
+ *
+ * @returns Index of first occurrence of target, or -1 if not present.
+ */
 class LinearSearch : public SAlgo
 {
    public:
@@ -57,6 +112,39 @@ class LinearSearch : public SAlgo
 };
 
 // -- Interpolation Search ------------------------------------------------------
+/**
+ * @brief Improved binary search that guesses the probe position from value distribution.
+ *
+ * @details
+ * Instead of always probing the midpoint, interpolation search estimates the
+ * likely position of the target based on how it compares to the endpoints:
+ *
+ *   pos = lo + (hi - lo) * (target - arr[lo]) / (arr[hi] - arr[lo])
+ *
+ * This is equivalent to linear interpolation: if the array were perfectly
+ * uniformly distributed, this formula would land exactly on the target on the
+ * first probe.
+ *
+ * On each iteration the interval shrinks based on the computed probe position
+ * rather than always halving — this makes it faster than binary search for
+ * uniform data but can degrade to O(n) for skewed distributions (e.g. an
+ * exponentially growing sequence where one half is always tiny).
+ *
+ * @par Complexity
+ *   Time  O(log log n) average on uniformly distributed data.
+ *   Time  O(n) worst case (non-uniform distribution).
+ *   Space O(1).
+ *
+ * @par Precondition
+ *   arr must be sorted in non-decreasing order.
+ *   Works best when elements are uniformly distributed (e.g. IDs, timestamps).
+ *
+ * @par When to use
+ *   Large, uniformly distributed, sorted arrays where the O(log log n) constant
+ *   factor matters.  Avoid for integer sequences with clustering or large gaps.
+ *
+ * @returns Index of target in arr, or -1 if not present.
+ */
 class InterpolationSearch : public SAlgo
 {
    public:

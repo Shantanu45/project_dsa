@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   segment_tree.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <climits>
 #include <functional>
 #include <vector>
@@ -10,24 +16,50 @@ namespace SegTree {
 //  SegmentTree<T, Combine>  –  generic segment tree
 // =============================================================================
 /**
- * A segment tree splits an array into a binary tree of ranges.
- * Each internal node stores the combined value (sum / min / max / gcd …) of
+ * @brief Generic segment tree for range queries and point updates.
+ *
+ * @details
+ * A segment tree splits an array into a binary tree of ranges.  Each internal
+ * node stores the combined result (sum, min, max, gcd, …) of all elements in
  * its range.  Leaf nodes store individual array elements.
  *
- * Storage: 1-indexed array of size 4*n.
- *   Node 1   = root (covers [0, n-1])
- *   Node 2i  = left  child of i  (covers [l, mid])
- *   Node 2i+1= right child of i  (covers [mid+1, r])
+ * @par Storage layout (1-indexed)
+ *   Node 1    = root (covers [0, n-1])
+ *   Node 2i   = left  child of i (covers [l, mid])
+ *   Node 2i+1 = right child of i (covers [mid+1, r])
+ *   Array size: 4 × n (safe upper bound — the tree is a complete binary tree
+ *   padded to a power of two).
  *
- * Complexities:
- *   build(arr)          O(n)
- *   query(l, r)         O(log n)  — combine results from O(log n) nodes
- *   update(idx, val)    O(log n)  — update leaf + O(log n) ancestors
+ * @par Build — O(n)
+ *   Recursively set each leaf to arr[i], then propagate up:
+ *     tree[node] = combine(tree[2*node], tree[2*node+1])
  *
- * Parameterisation:
- *   Combine = std::plus<int>   → range sum   (identity = 0)
- *   Combine = std::min lambda  → range min   (identity = INT_MAX)
- *   Combine = std::max lambda  → range max   (identity = INT_MIN)
+ * @par Query(l, r) — O(log n)
+ *   Walk the tree.  If the current node's range is fully inside [l, r],
+ *   return tree[node].  If fully outside, return the identity element.
+ *   Otherwise recurse into both children and combine their results.
+ *   At most O(4 * log n) nodes are visited per query.
+ *
+ * @par Update(idx, val) — O(log n)
+ *   Update the leaf at idx, then recompute all O(log n) ancestors on the path
+ *   back to the root.
+ *
+ * @par Parameterisation
+ *   Combine = std::plus<int>    → range sum   (identity = 0)
+ *   Combine = std::min lambda   → range min   (identity = INT_MAX)
+ *   Combine = std::max lambda   → range max   (identity = INT_MIN)
+ *   Any associative, commutative binary operation works.
+ *
+ * @par Complexity
+ *   build    O(n).
+ *   query    O(log n).
+ *   update   O(log n).
+ *   Space    O(n).
+ *
+ * @par Classic uses
+ *   Range sum / min / max queries with point updates; Fenwick tree is lighter
+ *   for pure range-sum but cannot handle arbitrary operations.
+ *   Segment tree with lazy propagation (not shown here) handles range updates.
  */
 template <typename T, typename Combine = std::plus<T>>
 class SegmentTree
@@ -99,6 +131,18 @@ using RangeOutput = std::vector<int>;
 // =============================================================================
 //  Range Sum
 // =============================================================================
+/**
+ * @brief Range sum query with point updates using a segment tree.
+ *
+ * @details
+ * Answers queries of the form "what is the sum of arr[l..r]?" after applying
+ * a batch of point updates.  Uses SegmentTree<int, std::plus<int>> with
+ * identity element 0.
+ *
+ * @par Complexity
+ *   Build O(n), each update O(log n), each query O(log n).
+ *   Naive baseline is O(n) per query — segment tree wins when queries ≫ 1.
+ */
 struct RangeSumTree : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override
@@ -114,6 +158,13 @@ struct RangeSumTree : Algorithm<RangeInput, RangeOutput>
     std::string complexity() const override { return "O(n) build, O(log n) query/update"; }
 };
 
+/**
+ * @brief Range sum query — O(n) per query naive baseline.
+ *
+ * @details
+ * Applies updates directly to the array, then answers each query by scanning
+ * arr[l..r].  Correct and simple; use to validate the tree implementation.
+ */
 struct RangeSumNaive : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override
@@ -136,6 +187,22 @@ struct RangeSumNaive : Algorithm<RangeInput, RangeOutput>
 // =============================================================================
 //  Range Min
 // =============================================================================
+/**
+ * @brief Range minimum query with point updates using a segment tree.
+ *
+ * @details
+ * Uses SegmentTree<int, min-lambda> with identity element INT_MAX.
+ * Answers "what is the minimum of arr[l..r]?" after point updates.
+ * Equivalent to a sparse table for static arrays, but supports updates.
+ *
+ * @par Classic uses
+ *   Range minimum query (RMQ), lowest common ancestor (via Euler tour),
+ *   histogram largest-rectangle (stack approach is O(n) total, but segment
+ *   tree handles the online / with-updates variant).
+ *
+ * @par Complexity
+ *   Build O(n), each update/query O(log n).
+ */
 struct RangeMinTree : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override
@@ -152,6 +219,9 @@ struct RangeMinTree : Algorithm<RangeInput, RangeOutput>
     std::string complexity() const override { return "O(n) build, O(log n) query"; }
 };
 
+/**
+ * @brief Range minimum query — O(n) per query naive baseline.
+ */
 struct RangeMinNaive : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override
@@ -174,6 +244,16 @@ struct RangeMinNaive : Algorithm<RangeInput, RangeOutput>
 // =============================================================================
 //  Range Max
 // =============================================================================
+/**
+ * @brief Range maximum query with point updates using a segment tree.
+ *
+ * @details
+ * Uses SegmentTree<int, max-lambda> with identity element INT_MIN.
+ * Answers "what is the maximum of arr[l..r]?" after point updates.
+ *
+ * @par Complexity
+ *   Build O(n), each update/query O(log n).
+ */
 struct RangeMaxTree : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override
@@ -190,6 +270,9 @@ struct RangeMaxTree : Algorithm<RangeInput, RangeOutput>
     std::string complexity() const override { return "O(n) build, O(log n) query"; }
 };
 
+/**
+ * @brief Range maximum query — O(n) per query naive baseline.
+ */
 struct RangeMaxNaive : Algorithm<RangeInput, RangeOutput>
 {
     RangeOutput run(const RangeInput& in) override

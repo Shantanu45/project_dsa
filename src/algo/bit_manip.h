@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   bit_manip.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #pragma once
 #include <algorithm>
 #include <bit>       // std::popcount (C++20)
@@ -106,6 +113,20 @@ inline std::pair<int, int> two_single_numbers(const std::vector<int>& arr)
 struct PopcountInput  { std::vector<uint32_t> values; };
 using  PopcountOutput = std::vector<int>;
 
+/**
+ * @brief Batch popcount using Brian Kernighan's bit-clearing trick.
+ *
+ * @details
+ * Applies count_bits_kernighan() to each value in the input vector.
+ * Each call runs in O(k) where k is the number of set bits — making this
+ * method particularly fast for sparse bit patterns (few 1s set).
+ *
+ * The trick: `n &= n - 1` clears the lowest set bit in one operation, so
+ * the loop iterates exactly as many times as there are set bits.
+ *
+ * @par Complexity   O(k) per value, where k = popcount(value).
+ * @see count_bits_kernighan
+ */
 struct PopcountKernighan : Algorithm<PopcountInput, PopcountOutput>
 {
     PopcountOutput run(const PopcountInput& in) override
@@ -119,6 +140,19 @@ struct PopcountKernighan : Algorithm<PopcountInput, PopcountOutput>
     std::string complexity() const override { return "O(k) per value, k=set bits"; }
 };
 
+/**
+ * @brief Batch popcount using the C++20 std::popcount hardware instruction.
+ *
+ * @details
+ * Applies count_bits_popcount() (which calls std::popcount) to each value.
+ * On x86-64 this compiles to a single POPCNT instruction — O(1) regardless
+ * of the number of set bits, and typically 1 clock cycle.
+ *
+ * Use as the performance baseline against Kernighan for dense bit patterns.
+ *
+ * @par Complexity   O(1) per value (hardware instruction).
+ * @see count_bits_popcount
+ */
 struct PopcountStd : Algorithm<PopcountInput, PopcountOutput>
 {
     PopcountOutput run(const PopcountInput& in) override
@@ -136,6 +170,21 @@ struct PopcountStd : Algorithm<PopcountInput, PopcountOutput>
 struct SingleInput  { std::vector<int> arr; };
 using  SingleOutput = int;
 
+/**
+ * @brief Find the one element that appears once when all others appear twice — XOR trick.
+ *
+ * @details
+ * XORs all elements together.  The key identities:
+ *   x ^ x = 0  (duplicates cancel).
+ *   x ^ 0 = x  (identity).
+ *   XOR is commutative and associative (order does not matter).
+ *
+ * After XORing the full array, all paired elements have cancelled to 0,
+ * leaving only the single-occurrence element.
+ *
+ * @par Complexity   O(n) time, O(1) space.
+ * @see single_number_xor
+ */
 struct SingleNumberXOR : Algorithm<SingleInput, SingleOutput>
 {
     SingleOutput run(const SingleInput& in) override
@@ -146,6 +195,20 @@ struct SingleNumberXOR : Algorithm<SingleInput, SingleOutput>
     std::string complexity() const override { return "O(n) time, O(1) space"; }
 };
 
+/**
+ * @brief Find the single-occurrence element — sort-and-scan baseline.
+ *
+ * @details
+ * Sorts the array, then walks through pairs (i, i+1).  In a sorted array,
+ * any element appearing twice will sit adjacent to itself, so the first
+ * pair where arr[i] ≠ arr[i+1] reveals the unique element at arr[i].
+ * If no such pair is found, the unique element is the last one.
+ *
+ * Simpler to reason about than the XOR approach; used to validate it in tests.
+ *
+ * @par Complexity   O(n log n) time, O(n) space (copy for sorting).
+ * @see SingleNumberXOR for the O(n)/O(1) alternative.
+ */
 struct SingleNumberSort : Algorithm<SingleInput, SingleOutput>
 {
     SingleOutput run(const SingleInput& in) override

@@ -1,4 +1,10 @@
-#pragma once
+/*****************************************************************//**
+ * \file   tree.h
+ * \brief  
+ * 
+ * \author Shantanu Kumar
+ * \date   April 2026
+ *********************************************************************/
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -263,6 +269,16 @@ class AVL
  */
 struct TreeSearchInput { Vec vals; int target; };
 
+/**
+ * @brief Build a BST from vals, then search for target.
+ *
+ * @details
+ * Demonstrates the average-case O(log n) / worst-case O(n) behaviour of an
+ * unbalanced BST.  On sorted input the tree degenerates to a linked list
+ * (height = n), making every search O(n).
+ *
+ * @par Complexity   Build O(n log n) avg / O(n²) worst.   Search O(log n) avg / O(n) worst.
+ */
 class BSTSearch : public Algorithm<TreeSearchInput, bool>
 {
    public:
@@ -277,6 +293,16 @@ class BSTSearch : public Algorithm<TreeSearchInput, bool>
 	std::string complexity()  const override { return "O(log n) avg, O(n) worst"; }
 };
 
+/**
+ * @brief Build an AVL tree from vals, then search for target.
+ *
+ * @details
+ * The AVL height invariant guarantees O(log n) search even on pathological
+ * inputs like sorted sequences.  Compare against BSTSearch on sorted data
+ * to see the O(n) vs O(log n) contrast.
+ *
+ * @par Complexity   Build O(n log n) always.   Search O(log n) always.
+ */
 class AVLSearch : public Algorithm<TreeSearchInput, bool>
 {
    public:
@@ -291,6 +317,20 @@ class AVLSearch : public Algorithm<TreeSearchInput, bool>
 	std::string complexity()  const override { return "O(log n) always"; }
 };
 
+/**
+ * @brief Build a std::set from vals, then search for target.
+ *
+ * @details
+ * std::set is backed by a red-black tree — O(log n) operations guaranteed,
+ * similar to AVL but with at most 2 rotations per insert (AVL can do O(log n)
+ * rotations on insert but O(1) amortised).  Red-black trees have slightly
+ * better insert/delete performance; AVL trees have slightly better lookup
+ * performance (stricter balance → shallower tree).
+ *
+ * Used as the standard-library reference baseline.
+ *
+ * @par Complexity   Build O(n log n).   Search O(log n).
+ */
 class StdSetSearch : public Algorithm<TreeSearchInput, bool>
 {
    public:
@@ -328,6 +368,19 @@ class BSTSort : public Algorithm<Vec, Vec>
 	std::string complexity()  const override { return "O(n log n) avg, O(n^2) on sorted input"; }
 };
 
+/**
+ * @brief Sort by inserting into an AVL tree and collecting inorder output.
+ *
+ * @details
+ * Guaranteed O(n log n) even on sorted input, unlike BSTSort.
+ * Demonstrates the benefit of self-balancing: the AVL height invariant
+ * keeps every insert at O(log n) regardless of insertion order.
+ *
+ * Higher constant factor than std::sort (pointer chasing, per-node heap
+ * allocation) but useful to illustrate tree-based sorting correctness.
+ *
+ * @par Complexity   O(n log n) always.   Space O(n) (n nodes).
+ */
 class AVLSort : public Algorithm<Vec, Vec>
 {
    public:
