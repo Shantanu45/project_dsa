@@ -55,12 +55,12 @@ class MaxHeap
 		while (true)
 		{
 			int largest = i;
-            int l = 2 * i + 1;			// left
-            int r = 2 * i + 2;			// right
+            int l = 2 * i + 1;							// left
+            int r = 2 * i + 2;							// right
 			if (l < n && data_[l] > data_[largest]) largest = l;
 			if (r < n && data_[r] > data_[largest]) largest = r;
 			if (largest == i) break;
-			std::swap(data_[i], data_[largest]);
+			std::swap(data_[i], data_[largest]);		// swap with largest
 			i = largest;
 		}
 	}
