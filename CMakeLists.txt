@@ -25,6 +25,8 @@ project(
   HOMEPAGE_URL "%%myurl%%"
   LANGUAGES CXX C)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/Emscripten.cmake)
 include(ProjectOptions.cmake)

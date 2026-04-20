@@ -52,7 +52,7 @@ target_link_libraries(
   tests
   PRIVATE myproject::myproject_warnings
           myproject::myproject_options
-          Catch2::Catch2WithMain
+          Catch2::Catch2
           spdlog::spdlog)
 
 myproject_configure_linker(tests)
