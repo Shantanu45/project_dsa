@@ -166,7 +166,8 @@ class MinHeap
 		while (true)
 		{
 			int smallest = i;
-			int l = 2 * i + 1, r = 2 * i + 2;
+            int l = 2 * i + 1;
+			int r = 2 * i + 2;
 			if (l < n && data_[l] < data_[smallest]) smallest = l;
 			if (r < n && data_[r] < data_[smallest]) smallest = r;
 			if (smallest == i) break;
