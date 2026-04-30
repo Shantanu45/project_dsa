@@ -1,6 +1,21 @@
 /*****************************************************************//**
  * \file   dp.h
- * \brief  
+ * \brief  Dynamic Programming
+ * 
+ * \details
+ * Dynamic Programming (DP) is a powerful algorithmic technique used to solve complex problems by breaking them down into simpler subproblems. 
+ * It is particularly effective for optimization problems where you want to find the best (maximum or minimum) solution.
+ * 
+ * The core philosophy of DP is: "Those who cannot remember the past are condemned to repeat it." 
+ * Instead of re-calculating the same subproblems over and over, DP stores the results for future use.
+ * 
+ * Two Key Requirements
+ * 
+ * A problem must have these two properties to be solvable via DP:
+ * - Overlapping Subproblems: The problem can be broken down into subproblems which are reused several times (e.g.,
+ *			calculating Fibonacci numbers).
+ * - Optimal Substructure: The optimal solution to the main problem can be constructed from the optimal solutions of its
+ *			subproblems.
  * 
  * \author Shantanu Kumar
  * \date   April 2026
@@ -13,7 +28,7 @@
 #include "dsa_framework/framework.h"
 
 // -----------------------------------------------------------------------------
-//  DP namespace
+//  DP (Dynamic Programming) namespace
 // -----------------------------------------------------------------------------
 namespace DP
 {
