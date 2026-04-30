@@ -182,7 +182,7 @@ class DFS : public Algorithm<DFSInput, std::vector<int>>
 // -- Topological Sort (Kahn's BFS / in-degree algorithm) ----------------------
 /**
  * A topological ordering of a DAG is a linear ordering of vertices such that
- * for every directed edge u → v, u appears before v.
+ * for every directed edge u -> v, u appears before v.
  *
  * Kahn's algorithm:
  *   1. Compute in-degree for every vertex.
@@ -199,7 +199,7 @@ class DFS : public Algorithm<DFSInput, std::vector<int>>
 struct TopoInput
 {
 	int                            num_nodes;
-	std::vector<std::pair<int,int>> edges;  // directed: {u → v}
+	std::vector<std::pair<int,int>> edges;  // directed: {u -> v}
 };
 
 class TopologicalSort : public Algorithm<TopoInput, std::vector<int>>
@@ -294,7 +294,7 @@ class UnionFind
  * Steps:
  *   1. Sort all edges by weight  O(E log E)
  *   2. For each edge (u, v, w) in order:
- *        if u and v are in different components → add edge, unite them
+ *        if u and v are in different components -> add edge, unite them
  *   3. Stop after V-1 edges are added (spanning tree is complete)
  *
  * Complexities  O(E log E)  dominated by sorting

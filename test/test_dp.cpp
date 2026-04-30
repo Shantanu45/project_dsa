@@ -99,7 +99,7 @@ TEST_CASE("LIS - correctness", "[dp][lis][correctness]")
 
 	check({10, 9, 2, 5, 3, 7, 101, 18},  4);  // classic: 2,3,7,101
 	check({0, 1, 0, 3, 2, 3},            4);  // 0,1,2,3
-	check({7, 7, 7, 7},                  1);  // all equal → strictly increasing = 1
+	check({7, 7, 7, 7},                  1);  // all equal -> strictly increasing = 1
 	check({1, 2, 3, 4, 5},               5);  // already sorted
 	check({5, 4, 3, 2, 1},               1);  // reverse sorted
 	check({},                            0);  // empty
@@ -135,13 +135,13 @@ TEST_CASE("MatrixChainMult - correctness", "[dp][mcm][correctness]")
 	{
 		REQUIRE(mcm.run({{10, 30, 5, 60, 1}}) == 750);  // A*((BCD)) via A*(B*(CD))
 	}
-	SECTION("single matrix → 0 cost")
+	SECTION("single matrix -> 0 cost")
 	{
 		REQUIRE(mcm.run({{10, 20}}) == 0);
 	}
 	SECTION("two matrices")
 	{
-		// A: 2×3, B: 3×4  → only one way, cost = 2*3*4 = 24
+		// A: 2×3, B: 3×4  -> only one way, cost = 2*3*4 = 24
 		REQUIRE(mcm.run({{2, 3, 4}}) == 24);
 	}
 }

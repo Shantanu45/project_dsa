@@ -232,8 +232,8 @@ class MinHeap
  *   2. |lo_.size() - hi_.size()| <= 1  (sizes stay balanced)
  *
  * Median:
- *   even count  → average of lo_.top() and hi_.top()
- *   odd count   → lo_.top()  (lo always holds the extra element)
+ *   even count  -> average of lo_.top() and hi_.top()
+ *   odd count   -> lo_.top()  (lo always holds the extra element)
  *
  * Complexities
  *   push   O(log n)  – at most two heap operations
@@ -254,7 +254,7 @@ class MedianHeap
 		else
 			hi_.push(val);
 
-		// Rebalance: lo_ may hold at most one more element than hi_
+		// Re-balance: lo_ may hold at most one more element than hi_
 		if (lo_.size() > hi_.size() + 1)
 			hi_.push(lo_.pop());
 		else if (hi_.size() > lo_.size())
@@ -452,8 +452,8 @@ class MedianFinderHeap : public Algorithm<Vec, double>
  *
  * @details
  * Sorts a copy of the input array, then picks the middle element(s):
- *   - Odd n  → arr[n/2].
- *   - Even n → average of arr[n/2-1] and arr[n/2].
+ *   - Odd n  -> arr[n/2].
+ *   - Even n -> average of arr[n/2-1] and arr[n/2].
  *
  * Better constant factor than MedianFinderHeap for a static array because
  * std::sort exploits cache-friendly sequential access patterns.  Use this as
@@ -484,7 +484,7 @@ class MedianFinderSort : public Algorithm<Vec, double>
  * A plain MinHeap can't efficiently update an arbitrary element's priority
  * because it doesn't know where that element sits in the heap array.
  *
- * IndexedMinHeap maintains a position map  pos_[id] → heap index, so
+ * IndexedMinHeap maintains a position map  pos_[id] -> heap index, so
  * decrease_key can locate the entry in O(1) and sift it up in O(log n).
  *
  * This is the data structure needed for optimal Dijkstra and Prim's MST:

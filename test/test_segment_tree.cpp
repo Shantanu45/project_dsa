@@ -90,7 +90,7 @@ TEST_CASE("SegmentTree - range min", "[segtree][correctness]")
 
     SECTION("min drops after point update")
     {
-        // arr[1] = 0 → min over [0..2] drops from 3 to 0
+        // arr[1] = 0 -> min over [0..2] drops from 3 to 0
         SegTree::RangeInput in{{5, 3, 7}, {{0, 2}}, {{1, 0}}};
         REQUIRE(tree_algo.run(in)  == std::vector<int>{0});
         REQUIRE(naive_algo.run(in) == std::vector<int>{0});

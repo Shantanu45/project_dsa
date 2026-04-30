@@ -45,9 +45,9 @@ namespace SegTree {
  *   back to the root.
  *
  * @par Parameterisation
- *   Combine = std::plus<int>    → range sum   (identity = 0)
- *   Combine = std::min lambda   → range min   (identity = INT_MAX)
- *   Combine = std::max lambda   → range max   (identity = INT_MIN)
+ *   Combine = std::plus<int>    -> range sum   (identity = 0)
+ *   Combine = std::min lambda   -> range min   (identity = INT_MAX)
+ *   Combine = std::max lambda   -> range max   (identity = INT_MIN)
  *   Any associative, commutative binary operation works.
  *
  * @par Complexity

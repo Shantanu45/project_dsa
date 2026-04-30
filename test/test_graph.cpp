@@ -218,7 +218,7 @@ TEST_CASE("KruskalMST - minimum spanning tree weight", "[graph][kruskal][correct
 
 	SECTION("simple triangle: pick the two cheaper edges")
 	{
-		// weights: 0-1=1, 1-2=2, 0-2=10  →  MST = 1+2 = 3
+		// weights: 0-1=1, 1-2=2, 0-2=10  ->  MST = 1+2 = 3
 		REQUIRE(kruskal.run({3, {{1,0,1},{2,1,2},{10,0,2}}}) == 3);
 	}
 	SECTION("single node, no edges")
@@ -227,7 +227,7 @@ TEST_CASE("KruskalMST - minimum spanning tree weight", "[graph][kruskal][correct
 	}
 	SECTION("chain graph: MST is the whole chain")
 	{
-		// 0-1=1, 1-2=2, 2-3=3  →  MST = 1+2+3 = 6
+		// 0-1=1, 1-2=2, 2-3=3  ->  MST = 1+2+3 = 6
 		REQUIRE(kruskal.run({4, {{1,0,1},{2,1,2},{3,2,3}}}) == 6);
 	}
 	SECTION("classic 4-node example")
@@ -239,7 +239,7 @@ TEST_CASE("KruskalMST - minimum spanning tree weight", "[graph][kruskal][correct
 	}
 	SECTION("all equal weights")
 	{
-		// complete graph K4, all weight 1 → MST picks any 3 edges = 3
+		// complete graph K4, all weight 1 -> MST picks any 3 edges = 3
 		REQUIRE(kruskal.run({4, {{1,0,1},{1,0,2},{1,0,3},{1,1,2},{1,1,3},{1,2,3}}}) == 3);
 	}
 }

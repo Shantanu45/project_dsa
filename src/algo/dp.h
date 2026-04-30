@@ -34,7 +34,7 @@ namespace DP
  *     dp[i][c] = dp[i-1][c]                                      (skip item i)
  *     dp[i][c] = max(dp[i][c], dp[i-1][c - w[i]] + v[i])        (take item i, if w[i] <= c)
  *
- *   Base case: dp[0][*] = 0 (no items → zero value).
+ *   Base case: dp[0][*] = 0 (no items -> zero value).
  *   Answer: dp[n][W].
  *
  * @par Complexity
@@ -340,7 +340,7 @@ class LISBinarySearch : public Algorithm<Vec, int>
  *   single-element prefixes.  This "interval DP" pattern also appears in
  *   optimal BST, palindrome partitioning, and burst balloons.
  */
-struct MCMInput { std::vector<int> dims; };  // n matrices → n+1 dimensions
+struct MCMInput { std::vector<int> dims; };  // n matrices -> n+1 dimensions
 
 class MatrixChainMult : public Algorithm<MCMInput, long long>
 {

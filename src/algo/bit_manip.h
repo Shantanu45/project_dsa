@@ -73,7 +73,7 @@ inline uint32_t reverse_bits(uint32_t n)
  *
  * x ^ x == 0  (identical values cancel)
  * x ^ 0 == x  (XOR with zero is identity)
- * XOR is commutative and associative → order doesn't matter.
+ * XOR is commutative and associative -> order doesn't matter.
  * O(n) time, O(1) space.
  */
 inline int single_number_xor(const std::vector<int>& arr)
@@ -87,9 +87,9 @@ inline int single_number_xor(const std::vector<int>& arr)
  * two_single_numbers  –  when exactly two elements appear once (all others
  * appear twice), find both using XOR + bit-partitioning.
  *
- * Step 1: XOR all → xor_all = a ^ b (the two unique values).
+ * Step 1: XOR all -> xor_all = a ^ b (the two unique values).
  * Step 2: any set bit in xor_all differs between a and b.  Pick the lowest.
- * Step 3: partition array on that bit → a ends up in one group, b in the other.
+ * Step 3: partition array on that bit -> a ends up in one group, b in the other.
  */
 inline std::pair<int, int> two_single_numbers(const std::vector<int>& arr)
 {

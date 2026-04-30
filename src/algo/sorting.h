@@ -48,8 +48,8 @@ using Vec = std::vector<int>;
  *   - Natural parallelism: sub-partitions are independent.
  *
  * @par When to skip
- *   - Stability required → use MergeSort.
- *   - Guaranteed worst-case needed → use HeapSort or std::sort (Introsort).
+ *   - Stability required -> use MergeSort.
+ *   - Guaranteed worst-case needed -> use HeapSort or std::sort (Introsort).
  */
 class QuickSort : public Algorithm<Vec, Vec>
 {
@@ -106,8 +106,8 @@ class QuickSort : public Algorithm<Vec, Vec>
  *   - Parallelisable: sub-problems are fully independent.
  *
  * @par When to skip
- *   - Memory is tight → use HeapSort (O(1) extra space).
- *   - Raw speed on cache-friendly data → QuickSort often faster in practice.
+ *   - Memory is tight -> use HeapSort (O(1) extra space).
+ *   - Raw speed on cache-friendly data -> QuickSort often faster in practice.
  */
 class MergeSort : public Algorithm<Vec, Vec>
 {

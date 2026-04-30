@@ -128,10 +128,10 @@ class BST
  * most O(log n) rotations to restore the invariant.
  *
  * Four rotation cases triggered by balance factor (bf = height_L − height_R):
- *   bf =  2, bf(left)  ≥ 0 → LL case → single right rotation
- *   bf =  2, bf(left)  < 0 → LR case → left rotate child, then right rotate node
- *   bf = -2, bf(right) ≤ 0 → RR case → single left rotation
- *   bf = -2, bf(right) > 0 → RL case → right rotate child, then left rotate node
+ *   bf =  2, bf(left)  ≥ 0 -> LL case -> single right rotation
+ *   bf =  2, bf(left)  < 0 -> LR case -> left rotate child, then right rotate node
+ *   bf = -2, bf(right) ≤ 0 -> RR case -> single left rotation
+ *   bf = -2, bf(right) > 0 -> RL case -> right rotate child, then left rotate node
  *
  * Complexities (guaranteed worst-case, unlike plain BST)
  *   insert   O(log n)
@@ -264,7 +264,7 @@ class AVL
  * Compares BST (O(log n) avg, O(n) worst) vs AVL (O(log n) always) vs
  * std::set (red-black tree, O(log n) always) for a search after bulk insert.
  *
- * The interesting case: insert sorted data → BST degenerates to a linked list
+ * The interesting case: insert sorted data -> BST degenerates to a linked list
  * (height n), while AVL stays at height ~1.44 log n.
  */
 struct TreeSearchInput { Vec vals; int target; };
@@ -325,7 +325,7 @@ class AVLSearch : public Algorithm<TreeSearchInput, bool>
  * similar to AVL but with at most 2 rotations per insert (AVL can do O(log n)
  * rotations on insert but O(1) amortised).  Red-black trees have slightly
  * better insert/delete performance; AVL trees have slightly better lookup
- * performance (stricter balance → shallower tree).
+ * performance (stricter balance -> shallower tree).
  *
  * Used as the standard-library reference baseline.
  *

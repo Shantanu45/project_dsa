@@ -31,9 +31,9 @@ using SAlgo = Algorithm<SearchInput, int>;
  * @details
  * Repeatedly halves the search interval by comparing the target against the
  * midpoint element:
- *   - If arr[mid] == target  → found, return mid.
- *   - If arr[mid] <  target  → target must be in the right half (lo = mid+1).
- *   - If arr[mid] >  target  → target must be in the left half  (hi = mid-1).
+ *   - If arr[mid] == target  -> found, return mid.
+ *   - If arr[mid] <  target  -> target must be in the right half (lo = mid+1).
+ *   - If arr[mid] >  target  -> target must be in the left half  (hi = mid-1).
  * The interval collapses to empty (lo > hi) when the target is absent.
  *
  * Mid is computed as lo + (hi-lo)/2 rather than (lo+hi)/2 to avoid signed
